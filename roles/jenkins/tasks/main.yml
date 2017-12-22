@@ -32,8 +32,8 @@
   file:
     path: "/var/lib/jenkins/init.groovy.d"
     state: directory
-    owner: 'jenkins'
-    group: 'jenkins'
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
     mode: 0775
   become: yes
 
@@ -41,8 +41,8 @@
   template:
     src: admin_user.groovy
     dest: '/var/lib/jenkins/init.groovy.d/admin_user.groovy'
-    owner: 'jenkins'
-    group: 'jenkins'
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
     mode: 0775
   become: yes
 
@@ -52,6 +52,7 @@
     state: restarted
   become: yes
   when: installed_jenkins.changed
+  register: restart_status
 - import_tasks: wait_for_jenkins.yml
 
 - name: install plugins
@@ -70,5 +71,33 @@
     state: restarted
   become: yes
   when: installed_plugins.changed
+  register: restart_status
+- import_tasks: wait_for_jenkins.yml
 
+- name: create seed job
+  template:
+    src: seed_job.groovy
+    dest: '/var/lib/jenkins/init.groovy.d/seed_job.groovy'
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775
+  become: yes
+  register: seed_job
+
+- name: in-process script approval
+  template:
+    src: approve_script.groovy
+    dest: '/var/lib/jenkins/init.groovy.d/approve_script.groovy'
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775
+  become: yes
+
+- name: restart jenkins
+  service:
+    name: jenkins
+    state: restarted
+  become: yes
+  when: seed_job.changed
+  register: restart_status
 - import_tasks: wait_for_jenkins.yml
