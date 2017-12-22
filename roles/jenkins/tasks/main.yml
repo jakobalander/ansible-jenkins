@@ -46,14 +46,8 @@
     mode: 0775
   become: yes
 
-- name: restart jenkins
-  service:
-    name: jenkins
-    state: restarted
-  become: yes
+- import_tasks: restart_jenkins.yml
   when: installed_jenkins.changed
-  register: restart_status
-- import_tasks: wait_for_jenkins.yml
 
 - name: install plugins
   jenkins_plugin:
@@ -65,14 +59,8 @@
   register: installed_plugins
   with_items: "{{ plugins }}"
 
-- name: restart jenkins
-  service:
-    name: jenkins
-    state: restarted
-  become: yes
+- import_tasks: restart_jenkins.yml
   when: installed_plugins.changed
-  register: restart_status
-- import_tasks: wait_for_jenkins.yml
 
 - name: create seed job
   template:
@@ -93,11 +81,6 @@
     mode: 0775
   become: yes
 
-- name: restart jenkins
-  service:
-    name: jenkins
-    state: restarted
-  become: yes
-  when: seed_job.changed
-  register: restart_status
-- import_tasks: wait_for_jenkins.yml
+- import_tasks: restart_jenkins.yml
+  when: seed_job.change
+  
