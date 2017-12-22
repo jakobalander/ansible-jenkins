@@ -10,7 +10,7 @@ def configXml = """\
     <keepDependencies>false</keepDependencies>
     <properties>
     </properties>
-    <scm class="hudson.plugins.git.GitSCM" plugin="git@3.6.4">
+    <scm class="hudson.plugins.git.GitSCM" plugin="git@{{ plugin_git_version }}">
         <configVersion>2</configVersion>
         <userRemoteConfigs>
             <hudson.plugins.git.UserRemoteConfig>
@@ -33,7 +33,7 @@ def configXml = """\
     <triggers/>
     <concurrentBuild>false</concurrentBuild>
     <builders>
-      <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.37">
+      <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@{{ plugin_job_dsl_version }}">
         <targets>{{ jenkins_seed_job.dsl_script_path }}</targets>
         <usingScriptText>false</usingScriptText>
         <ignoreExisting>false</ignoreExisting>
