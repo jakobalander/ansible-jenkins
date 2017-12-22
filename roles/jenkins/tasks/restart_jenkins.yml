@@ -1,7 +1,12 @@
+- name: restart jenkins initiated
+  service:
+    name: jenkins
+    state: restarted
+  become: yes
+
 - name: wait for jenkins to shut down
   pause:
     seconds: 2
-  when: restart_status.changed
 
 - name: wait for jenkins to start up
   uri:
@@ -11,4 +16,3 @@
   until: result.status == 200
   retries: 60
   delay: 1
-  when: restart_status.changed
